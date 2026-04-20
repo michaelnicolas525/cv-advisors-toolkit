@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CV Advisors — Client Analysis Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2644;--navy2:#2a3a6e;--faint:#eef1f8;
+  --gold:#c9a84c;--red:#a32d2d;--green:#3b6d11;
+  --gray:#53565a;--border:#d4d8e2;--white:#fff;--bg:#f7f8fc;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--navy);font-size:14px;min-height:100vh}
+header{background:var(--navy);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'EB Garamond',serif;font-size:1.4rem;color:#fff;letter-spacing:.05em}
+.logo span{color:var(--gold)}
+.badge{font-size:.62rem;background:var(--gold);color:var(--navy);padding:3px 10px;border-radius:2px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.wrap{max-width:1080px;margin:0 auto;padding:1.75rem 1.5rem}
+.pg-title{font-family:'EB Garamond',serif;font-size:1.8rem;font-weight:600;margin-bottom:.2rem}
+.pg-sub{font-size:.82rem;color:var(--gray);margin-bottom:1.5rem;line-height:1.5}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.5rem}
+.tab{padding:.55rem 1.15rem;font-size:.72rem;font-weight:500;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;text-transform:uppercase;letter-spacing:.06em;transition:all .15s;user-select:none}
+.tab:hover{color:var(--navy)}
+.tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:1.4rem;margin-bottom:1rem}
+.card h3{font-family:'EB Garamond',serif;font-size:.85rem;font-weight:700;color:var(--navy);margin-bottom:.9rem;padding-bottom:.45rem;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.07em}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
+.fg{display:flex;flex-direction:column;gap:.28rem}
+.fg.full{grid-column:1/-1}
+label{font-size:.67rem;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{border:1px solid var(--border);border-radius:3px;padding:.45rem .7rem;font-size:.83rem;font-family:'DM Sans',sans-serif;color:var(--navy);background:var(--white);width:100%;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,38,68,.07)}
+textarea{resize:vertical;min-height:75px}
+.ablock{border:1px solid var(--border);border-radius:3px;padding:.95rem;margin-bottom:.75rem;background:var(--faint)}
+.ablock:last-child{margin-bottom:0}
+.ablock-title{font-size:.72rem;font-weight:500;color:var(--navy);margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:.5rem}
+.ablock-num{background:var(--navy);color:#fff;width:18px;height:18px;border-radius:50%;font-size:.6rem;display:flex;align-items:center;justify-content:center;font-weight:500;flex-shrink:0}
+.run-btn{background:var(--navy);color:#fff;border:none;padding:.78rem 2.25rem;font-size:.86rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;border-radius:3px;transition:background .15s;display:inline-flex;align-items:center;gap:.5rem;}
+.run-btn:hover{background:var(--navy2)}
+.run-btn:disabled{opacity:.5;cursor:not-allowed}
+.spin-sm{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:#fcebeb;border:1px solid #f7c1c1;border-radius:3px;padding:.9rem 1.1rem;font-size:.83rem;color:var(--red);display:none;margin-bottom:1rem;line-height:1.6}
+.err.on{display:block}
+.loading-wrap{display:none;align-items:flex-start;gap:1rem;padding:1.75rem;background:var(--white);border:1px solid var(--border);border-radius:4px;margin-bottom:1rem}
+.loading-wrap.on{display:flex}
+.spin-lg{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;margin-top:2px}
+.loading-label{font-weight:500;color:var(--navy);margin-bottom:.5rem;font-size:.84rem}
+.steps{display:flex;flex-direction:column;gap:.35rem;font-size:.8rem;color:var(--gray)}
+.step.done{color:var(--green)}
+.step.active{color:var(--navy);font-weight:500}
+.out{display:none}.out.on{display:block}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:.85rem;text-align:center;background:var(--white);border:1px solid var(--border);border-radius:4px;padding:2rem}
+.placeholder p{font-family:'EB Garamond',serif;font-size:1.05rem;color:var(--gray);opacity:.65}
+.sec{margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+.sec:last-child{border-bottom:none;margin-bottom:0}
+.sec-title{font-family:'EB Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--navy);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+.sec-num{background:var(--navy);color:#fff;width:22px;height:22px;border-radius:50%;font-size:.65rem;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;font-weight:500;flex-shrink:0}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.9rem}
+.stat-box{background:var(--navy);color:#fff;padding:.95rem;border-radius:3px}
+.stat-box .val{font-family:'EB Garamond',serif;font-size:1.5rem;font-weight:600;line-height:1.1;margin-bottom:.2rem}
+.stat-box .lbl{font-size:.62rem;opacity:.7;text-transform:uppercase;letter-spacing:.05em}
+.at{font-size:.84rem;line-height:1.78;color:var(--navy);white-space:pre-wrap}
+table.dt{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:.7rem}
+table.dt th{background:var(--navy);color:#fff;padding:.5rem .72rem;text-align:left;font-weight:500;font-size:.7rem;letter-spacing:.04em}
+table.dt td{padding:.5rem .72rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+table.dt tr:nth-child(even) td{background:var(--faint)}
+.fl{display:inline-block;padding:2px 8px;border-radius:2px;font-size:.65rem;font-weight:500}
+.fl-r{background:#fcebeb;color:var(--red)}
+.fl-g{background:#edf6e6;color:var(--green)}
+.fl-a{background:#faeeda;color:#854f0b}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:.7rem}
+.ib{border:1px solid var(--border);border-radius:3px;padding:.95rem}
+.ib h4{font-size:.68rem;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.ib .big{font-family:'EB Garamond',serif;font-size:1.55rem;font-weight:600;color:var(--navy);margin-bottom:.2rem}
+.ib .big.g{color:var(--green)}
+.ib p{font-size:.78rem;color:var(--gray);line-height:1.58}
+table.ct{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:.7rem}
+table.ct th{padding:.55rem .72rem;text-align:left;font-weight:500;font-size:.7rem;letter-spacing:.04em}
+table.ct th.nv{background:var(--navy);color:#fff}
+table.ct th.lt{background:var(--faint);color:var(--navy);border:1px solid var(--border)}
+table.ct td{padding:.55rem .72rem;border:1px solid var(--border);vertical-align:top;line-height:1.58}
+table.ct td.rh{background:var(--navy);color:#fff;font-weight:500;width:115px;font-size:.72rem;line-height:1.5}
+table.ct td.cv{background:#fffbf0;border:2px dashed var(--navy)}
+.sdraft{background:var(--faint);border:1px solid var(--border);border-radius:3px;padding:1.1rem 1.25rem;font-size:.78rem;line-height:1.9;white-space:pre-wrap;font-family:'DM Sans',monospace;color:var(--navy);max-height:440px;overflow-y:auto;}
+.copy-btn{background:transparent;border:1px solid var(--border);border-radius:3px;padding:.35rem .9rem;font-size:.72rem;cursor:pointer;color:var(--gray);font-family:'DM Sans',sans-serif;margin-top:.6rem;transition:all .15s;}
+.copy-btn:hover{border-color:var(--navy);color:var(--navy)}
+@media(max-width:700px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .ig{grid-template-columns:1fr}
+  header{padding:.75rem 1rem}
+  .wrap{padding:1.25rem 1rem}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">CV <span>Advisors</span></div>
+  <div class="badge">Associate Toolkit — Internal Use Only</div>
+</header>
+<div class="wrap">
+  <div class="pg-title">Client Analysis Toolkit</div>
+  <div class="pg-sub">Enter client intake data below. The toolkit generates a full wealth management analysis — net worth summary, portfolio analysis, income plan, custodian recommendation, and slide draft — in under 60 seconds.</div>
+  <div class="tabs">
+    <div class="tab active" id="t1" onclick="sw(1)">1. Client Intake</div>
+    <div class="tab" id="t2" onclick="sw(2)">2. Analysis Output</div>
+  </div>
+  <div class="panel active" id="p1">
+    <div class="card">
+      <h3>Client Profile</h3>
+      <div class="grid2">
+        <div class="fg"><label>Client Name(s)</label><input id="cn" placeholder="e.g. Sara and Jack"/></div>
+        <div class="fg"><label>Age</label><input id="ca" placeholder="e.g. 65"/></div>
+        <div class="fg"><label>Location</label><input id="cl" placeholder="e.g. Miami, FL"/></div>
+        <div class="fg"><label>Risk Profile</label>
+          <select id="rp">
+            <option value="conservative">Conservative</option>
+            <option value="moderate">Moderate</option>
+            <option value="aggressive">Aggressive</option>
+          </select>
+        </div>
+        <div class="fg full"><label>Key Goals / Notes</label>
+          <textarea id="cg" placeholder="e.g. Preserve wealth, generate income, simplify financial complexity across multiple advisor relationships"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Income Requirement</h3>
+      <div class="grid2">
+        <div class="fg"><label>Monthly Target Pre-Tax ($)</label><input id="it" placeholder="e.g. 100000"/></div>
+        <div class="fg"><label>Existing Monthly Income ($)</label><input id="ei" placeholder="e.g. 30000"/></div>
+        <div class="fg full"><label>Income Source Description</label>
+          <input id="is" placeholder="e.g. Denver rental property — net after tax and depreciation"/>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Liquid Portfolio</h3>
+      <div class="ablock">
+        <div class="ablock-title"><div class="ablock-num">1</div>Advisor 1</div>
+        <div class="grid3">
+          <div class="fg"><label>Institution</label><input id="a1i" placeholder="e.g. JPMorgan"/></div>
+          <div class="fg"><label>Advisor Name</label><input id="a1n" placeholder="e.g. Peter Jones"/></div>
+          <div class="fg"><label>Relationship</label><input id="a1r" placeholder="e.g. 25+ year personal"/></div>
+          <div class="fg"><label>AUM ($)</label><input id="a1a" placeholder="e.g. 40000000"/></div>
+          <div class="fg"><label>Annual Fee (% AUM)</label><input id="a1f" placeholder="e.g. 1.00"/></div>
+          <div class="fg"><label>Holdings (tickers)</label><input id="a1h" placeholder="e.g. SPY, EEM, HYG"/></div>
+        </div>
+      </div>
+      <div class="ablock">
+        <div class="ablock-title"><div class="ablock-num">2</div>Advisor 2</div>
+        <div class="grid3">
+          <div class="fg"><label>Institution</label><input id="a2i" placeholder="e.g. UBS"/></div>
+          <div class="fg"><label>Advisor Name</label><input id="a2n" placeholder="e.g. Patrick Smith"/></div>
+          <div class="fg"><label>Relationship</label><input id="a2r" placeholder="e.g. Childhood friend"/></div>
+          <div class="fg"><label>AUM ($)</label><input id="a2a" placeholder="e.g. 40000000"/></div>
+          <div class="fg"><label>Annual Fee (% AUM)</label><input id="a2f" placeholder="e.g. 1.25"/></div>
+          <div class="fg"><label>Holdings (tickers)</label><input id="a2h" placeholder="e.g. FEZ, EWJ, AGG, EMB"/></div>
+        </div>
+      </div>
+      <div class="ablock">
+        <div class="ablock-title"><div class="ablock-num">3</div>Advisor 3</div>
+        <div class="grid3">
+          <div class="fg"><label>Institution</label><input id="a3i" placeholder="e.g. Morgan Stanley"/></div>
+          <div class="fg"><label>Advisor Name</label><input id="a3n" placeholder="e.g. Raul Fernandez"/></div>
+          <div class="fg"><label>Relationship</label><input id="a3r" placeholder="e.g. Professional referral"/></div>
+          <div class="fg"><label>AUM ($)</label><input id="a3a" placeholder="e.g. 20000000"/></div>
+          <div class="fg"><label>Annual Fee (% AUM)</label><input id="a3f" placeholder="e.g. 0.50"/></div>
+          <div class="fg"><label>Holdings (tickers)</label><input id="a3h" placeholder="e.g. URTH, LQD"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Real Estate &amp; Other Assets</h3>
+      <div class="fg">
+        <label>Describe each asset on a new line</label>
+        <textarea id="re" style="min-height:90px" placeholder="e.g. Miami primary residence — $20,000,000 — no mortgage&#10;Aspen vacation home — $15,000,000 — $5M mortgage at 2.35%&#10;Denver rental property — $30,000/month net income"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:.75rem;padding-bottom:2.5rem">
+      <button class="run-btn" id="rbtn" onclick="run()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+        Run Full Analysis
+      </button>
+    </div>
+  </div>
+  <div class="panel" id="p2">
+    <div class="err" id="err"></div>
+    <div class="loading-wrap" id="lw">
+      <div class="spin-lg"></div>
+      <div>
+        <div class="loading-label">Analyzing client data...</div>
+        <div class="steps" id="stps">
+          <div class="step" id="s1">&#9711; Building net worth summary</div>
+          <div class="step" id="s2">&#9711; Analyzing portfolio holdings</div>
+          <div class="step" id="s3">&#9711; Calculating income plan</div>
+          <div class="step" id="s4">&#9711; Generating custodian recommendation</div>
+          <div class="step" id="s5">&#9711; Drafting slide content</div>
+        </div>
+      </div>
+    </div>
+    <div class="out" id="out">
+      <div class="sec">
+        <div class="sec-title"><div class="sec-num">1</div>Net Worth Summary</div>
+        <div class="stat-grid" id="sg"></div>
+        <div class="at" id="nwt"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-num">2</div>Portfolio Analysis</div>
+        <table class="dt"><thead><tr><th>ETF / Position</th><th>Institution</th><th>Approx Value</th><th>Yield</th><th>Assessment</th><th>Flag</th></tr></thead><tbody id="etb"></tbody></table>
+        <div class="at" style="margin-top:.9rem" id="pat"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-num">3</div>Income Plan</div>
+        <div class="ig" id="ig"></div>
+        <div class="at" style="margin-top:.9rem" id="ipt"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-num">4</div>Custodian Recommendation</div>
+        <table class="ct" id="ctt"></table>
+        <div class="at" style="margin-top:.9rem" id="cut"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-num">5</div>Slide Content Draft</div>
+        <div class="sdraft" id="sdr"></div>
+        <button class="copy-btn" onclick="cp()">Copy to clipboard</button>
+      </div>
+    </div>
+    <div class="placeholder" id="ph">
+      <svg width="44" height="44" fill="none" stroke="#d4d8e2" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <p>Fill in the intake form and click Run Full Analysis</p>
+    </div>
+  </div>
+</div>
+<script>
+const g = id => document.getElementById(id);
+const v = id => g(id).value.trim();
+function sw(n) {
+  [1, 2].forEach(i => {
+    g('t' + i).classList.toggle('active', i === n);
+    g('p' + i).classList.toggle('active', i === n);
+  });
+}
+function fmt(n) {
+  const x = parseFloat(String(n).replace(/[^0-9.]/g, ''));
+  if (isNaN(x)) return String(n);
+  if (x >= 1000000) return '$' + (x / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (x >= 1000) return '$' + (x / 1000).toFixed(0) + 'K';
+  return '$' + x.toLocaleString();
+}
+const stepLabels = ['Building net worth summary','Analyzing portfolio holdings','Calculating income plan','Generating custodian recommendation','Drafting slide content'];
+let stepIdx = 0, stepTimer;
+function tickStep() {
+  if (stepIdx > 0) { g('s' + stepIdx).className = 'step done'; g('s' + stepIdx).textContent = '\u2713 ' + stepLabels[stepIdx - 1]; }
+  if (stepIdx < 5) { stepIdx++; g('s' + stepIdx).className = 'step active'; g('s' + stepIdx).textContent = '\u27f3 ' + stepLabels[stepIdx - 1]; }
+}
+function buildPrompt() {
+  const aums = [v('a1a'), v('a2a'), v('a3a')].map(x => parseFloat(x) || 0);
+  const fees = [v('a1f'), v('a2f'), v('a3f')].map(x => parseFloat(x) || 0);
+  const totalAUM = aums.reduce((s, x) => s + x, 0);
+  const totalFees = aums.reduce((s, x, i) => s + (x * fees[i] / 100), 0);
+  const needed = (parseFloat(v('it')) || 0) - (parseFloat(v('ei')) || 0);
+  return `You are a senior portfolio manager at CV Advisors, a multi-family office in Aventura, Florida. Analyze this client intake and produce a structured JSON response.
+
+CLIENT: ${v('cn')}, age ${v('ca')}, ${v('cl')}, ${v('rp')} investor
+GOALS: ${v('cg')}
+INCOME: Target $${v('it')}/mo pre-tax. Existing $${v('ei')}/mo from ${v('is')}. Portfolio must generate $${needed}/mo.
+PORTFOLIO ($${totalAUM.toLocaleString()} total, $${Math.round(totalFees).toLocaleString()}/yr in fees):
+1. ${v('a1i')} — ${v('a1n')} — ${v('a1r')} — $${v('a1a')} AUM — ${v('a1f')}% — ${v('a1h')}
+2. ${v('a2i')} — ${v('a2n')} — ${v('a2r')} — $${v('a2a')} AUM — ${v('a2f')}% — ${v('a2h')}
+3. ${v('a3i')} — ${v('a3n')} — ${v('a3r')} — $${v('a3a')} AUM — ${v('a3f')}% — ${v('a3h')}
+REAL ESTATE: ${v('re')}
+
+Respond ONLY with valid JSON, no markdown or preamble:
+{
+  "netWorth": { "liquidAssets": 0, "realEstateValue": 0, "totalLiabilities": 0, "estimatedNetWorth": 0, "annualAdvisoryFees": 0, "summary": "" },
+  "portfolioAnalysis": { "holdings": [{ "ticker": "", "institution": "", "approxValue": 0, "approxYield": "", "assessment": "", "flag": "KEEP" }], "keyIssues": "", "overlapNote": "" },
+  "incomePlan": { "targetMonthly": 0, "existingMonthly": 0, "portfolioNeeded": 0, "proposedAllocation": [{ "ticker": "", "weight": "", "approxYield": "", "annualIncome": 0 }], "totalAnnualIncome": 0, "totalMonthlyIncome": 0, "bufferMonthly": 0, "summary": "" },
+  "custodianRecommendation": { "advisors": [{ "name": "", "institution": "", "relationship": "", "fee": "", "strengths": "", "shortfalls": "", "recommendation": "KEEP", "rationale": "" }], "currentTotalFees": 0, "estimatedCVFees": 0, "summary": "" },
+  "slideDraft": { "whatWeHeard": "", "portfolioAnalysisBullets": "", "recommendationBullets": "", "incomePlanBullets": "", "custodianBullets": "", "closingStatement": "" }
+}`;
+}
+async function run() {
+  const btn = g('rbtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin-sm"></div> Analyzing...';
+  sw(2);
+  g('ph').style.display = 'none';
+  g('out').classList.remove('on');
+  g('err').classList.remove('on');
+  g('lw').classList.add('on');
+  stepIdx = 0;
+  [1, 2, 3, 4, 5].forEach(i => { g('s' + i).className = 'step'; g('s' + i).textContent = '\u25ef ' + stepLabels[i - 1]; });
+  tickStep();
+  stepTimer = setInterval(tickStep, 2800);
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: buildPrompt() }] })
+    });
+    clearInterval(stepTimer);
+    [1, 2, 3, 4, 5].forEach(i => { g('s' + i).className = 'step done'; g('s' + i).textContent = '\u2713 ' + stepLabels[i - 1]; });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const raw = data.content.map(c => c.text || '').join('');
+    const result = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    render(result);
+    g('lw').classList.remove('on');
+    g('out').classList.add('on');
+  } catch (e) {
+    clearInterval(stepTimer);
+    g('lw').classList.remove('on');
+    g('err').textContent = 'Analysis failed: ' + e.message;
+    g('err').classList.add('on');
+    g('ph').style.display = 'flex';
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg> Run Full Analysis';
+}
+function render(r) {
+  const nw = r.netWorth;
+  g('sg').innerHTML = [{ val: fmt(nw.liquidAssets), lbl: 'Liquid Assets' },{ val: fmt(nw.realEstateValue), lbl: 'Real Estate' },{ val: fmt(nw.estimatedNetWorth), lbl: 'Est. Net Worth' },{ val: fmt(nw.annualAdvisoryFees), lbl: 'Annual Fees' }].map(s => `<div class="stat-box"><div class="val">${s.val}</div><div class="lbl">${s.lbl}</div></div>`).join('');
+  g('nwt').textContent = nw.summary;
+  const pa = r.portfolioAnalysis;
+  g('etb').innerHTML = pa.holdings.map(h => { const fc = h.flag === 'KEEP' ? 'fl-g' : h.flag === 'REMOVE' ? 'fl-r' : 'fl-a'; return `<tr><td><strong>${h.ticker}</strong></td><td>${h.institution}</td><td>${fmt(h.approxValue)}</td><td>${h.approxYield}</td><td>${h.assessment}</td><td><span class="fl ${fc}">${h.flag}</span></td></tr>`; }).join('');
+  g('pat').textContent = pa.keyIssues + '\n\n' + pa.overlapNote;
+  const ip = r.incomePlan;
+  g('ig').innerHTML = `<div class="ib"><h4>Monthly Target</h4><div class="big">${fmt(ip.targetMonthly)}<span style="font-size:.95rem;font-weight:400">/mo</span></div><p>Existing: ${fmt(ip.existingMonthly)}/mo<br>Portfolio must generate: <strong>${fmt(ip.portfolioNeeded)}/mo</strong></p></div><div class="ib"><h4>Proposed Portfolio Income</h4><div class="big g">${fmt(ip.totalMonthlyIncome)}<span style="font-size:.95rem;font-weight:400">/mo</span></div><p>Annual: ${fmt(ip.totalAnnualIncome)}<br>Buffer above target: <strong>${fmt(ip.bufferMonthly)}/mo</strong></p></div>`;
+  let it = ip.summary + '\n\nProposed Allocation:\n';
+  ip.proposedAllocation.forEach(a => { it += `${a.ticker}  ${a.weight}  @ ${a.approxYield}  =  ${fmt(a.annualIncome)}/yr\n`; });
+  g('ipt').textContent = it;
+  const cr = r.custodianRecommendation;
+  const rows = [['relationship','Relationship'],['fee','Annual Fee'],['strengths','Strengths'],['shortfalls','Shortfalls'],['recommendation','Recommendation']];
+  let th = '<thead><tr><th class="nv" style="width:115px">Category</th>';
+  cr.advisors.forEach(a => { th += `<th class="lt">${a.name}<br><span style="font-weight:400;font-size:.65rem">${a.institution}</span></th>`; });
+  th += '<th class="nv">CV Advisors</th></tr></thead><tbody>';
+  rows.forEach(([row, lbl]) => {
+    let tr = `<tr><td class="rh">${lbl}</td>`;
+    cr.advisors.forEach(a => { tr += `<td>${a[row]}</td>`; });
+    if (row === 'fee') tr += `<td class="cv"><strong>${fmt(cr.estimatedCVFees)}/yr est.</strong><br><span style="color:var(--green)">vs ${fmt(cr.currentTotalFees)}/yr today</span></td>`;
+    else if (row === 'strengths') tr += '<td class="cv"><strong>Fiduciary. No conflicts.</strong><br>Consolidated reporting. Investment committee oversight.</td>';
+    else if (row === 'shortfalls') tr += '<td class="cv" style="color:var(--green)"><strong>None identified.</strong></td>';
+    else if (row === 'recommendation') tr += '<td class="cv"><strong>Full mandate. One coordinated plan.</strong></td>';
+    else tr += '<td class="cv"><strong>Single point of contact for all assets.</strong></td>';
+    tr += '</tr>';
+    th += tr;
+  });
+  th += '</tbody>';
+  g('ctt').innerHTML = th;
+  g('cut').textContent = cr.summary;
+  const sd = r.slideDraft;
+  g('sdr').textContent = `WHAT WE HEARD\n${sd.whatWeHeard}\n\nPORTFOLIO ANALYSIS\n${sd.portfolioAnalysisBullets}\n\nRECOMMENDED PORTFOLIO\n${sd.recommendationBullets}\n\nINCOME PLAN\n${sd.incomePlanBullets}\n\nCUSTODIAN RECOMMENDATION\n${sd.custodianBullets}\n\nCLOSING\n${sd.closingStatement}`;
+}
+function cp() {
+  navigator.clipboard.writeText(g('sdr').textContent).then(() => {
+    const btn = event.target; btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy to clipboard', 2000);
+  });
+}
+</script>
+</body>
+</html>
